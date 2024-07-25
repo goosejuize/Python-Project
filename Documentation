@@ -1,0 +1,7 @@
+The goal of this program is to provide customers with an easy-to-use interface for ordering art supplies and scheduling delivery appointments, streamlining the purchasing process for both the business and the consumer. 
+The program provides a variety of features, including a selection of eight different art supplies with corresponding prices and mediums, an interactive appointment scheduling feature with a calendar interface, and the ability to generate a detailed receipt summarizing order and appointment details. 
+Its target audience includes artists, hobbyists, educators, and anyone looking to buy art supplies, making it especially useful for those who value convenience and organization during their shopping trips. 
+One of the program's advantages is its modular design, which divides concerns into distinct classes and functions, thereby improving maintainability and readability.
+Furthermore, the inclusion of a calendar for scheduling appointments adds a modern and user-friendly touch, making it accessible to users who may be unfamiliar with traditional text-based input methods. 
+However, the program has flaws, such as its reliance on a graphical user interface, which may only be appropriate for some users or environments.
+Furthermore, error handling could be improved to provide more informative feedback, allowing users to better understand any issues they encounter while interacting with the program. 
