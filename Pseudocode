@@ -1,0 +1,104 @@
+BEGIN PROGRAM
+
+    IMPORT datetime
+    IMPORT tkinter
+    IMPORT simpledialog FROM tkinter
+    IMPORT Calendar FROM tkcalendar
+    IMPORT get_appointment AND Appointment FROM appointment_handler.py
+
+    DEFINE InvalidInputError AS Exception
+
+    CLASS Product
+        METHOD __init__(name, price)
+            SET self.name = name
+            SET self.price = price
+
+    CLASS ArtSupply INHERITS Product
+        METHOD __init__(name, price, medium)
+            CALL super().__init__(name, price)
+            SET self.medium = medium
+
+    CLASS Order
+        METHOD __init__()
+            SET self.items AS EMPTY DICTIONARY
+            SET self.total_price = 0.0
+
+        METHOD add_product(product, quantity)
+            IF product.name IN self.items THEN
+                INCREMENT self.items[product.name]['quantity'] BY quantity
+            ELSE
+                SET self.items[product.name] = {'price': product.price, 'medium': product.medium, 'quantity': quantity}
+            ENDIF
+            INCREMENT self.total_price BY product.price * quantity
+            PRINT "Added product.name (xquantity) to your order."
+
+        METHOD get_receipt_summary()
+            SET receipt_content TO "Customer Receipt:\nOrder Summary:\n"
+            FOR EACH product_name, details IN self.items DO
+                APPEND details to receipt_content
+            ENDFOR
+            APPEND total price to receipt_content
+            RETURN receipt_content
+
+    FUNCTION display_products(products)
+        PRINT "Available Art Supplies:"
+        FOR EACH product IN products WITH INDEX idx DO
+            PRINT product.name, price, medium
+        ENDFOR
+
+    FUNCTION get_product_selection(products)
+        SET order AS new Order
+        WHILE TRUE DO
+            CALL display_products(products)
+            SET selection = USER INPUT "Select a product by number (0 to finish):"
+            IF selection IS NOT A DIGIT OR selection NOT IN VALID RANGE THEN
+                RAISE InvalidInputError
+            ENDIF
+            IF selection IS 0 THEN
+                BREAK
+            ENDIF
+            SET quantity = USER INPUT "Enter quantity:"
+            IF quantity <= 0 THEN
+                RAISE InvalidInputError
+            ENDIF
+            CALL order.add_product(products[selection - 1], quantity)
+        ENDWHILE
+        RETURN order
+
+    FUNCTION store_receipt(receipt_content)
+        TRY
+            OPEN 'customer_receipt.txt' FOR WRITING
+                WRITE receipt_content TO FILE
+            CLOSE FILE
+            PRINT "Receipt stored in customer_receipt.txt"
+        EXCEPTION AS e
+            PRINT "Error saving receipt: e"
+
+    FUNCTION read_receipt()
+        TRY
+            OPEN 'customer_receipt.txt' FOR READING
+                PRINT CONTENT OF FILE
+            CLOSE FILE
+        EXCEPTION AS e
+            PRINT "Error reading receipt: e"
+
+    FUNCTION main()
+        DEFINE products AS LIST OF ArtSupply OBJECTS
+
+        PRINT "Welcome to Artiza!"
+        SET order = CALL get_product_selection(products)
+
+        SET appointment = CALL get_appointment()
+        WHILE appointment IS None DO
+            SET appointment = CALL get_appointment()
+        ENDWHILE
+
+        SET receipt_content = CALL order.get_receipt_summary()
+        APPEND appointment details to receipt_content
+
+        CALL store_receipt(receipt_content)
+
+    IF PROGRAM IS EXECUTED THEN
+        CALL main()
+
+END PROGRAM
